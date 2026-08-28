@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#111827">
+<title>Loyalty Pelanggan</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef2f7;color:#111827}
+button,input{font:inherit}
+.header{background:#111827;color:white;padding:28px 22px 30px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{font-size:34px}
+h1{font-size:28px;margin:0;font-weight:800}
+.subtitle{margin:8px 0 0;color:#cbd5e1;font-size:16px}
+.wrap{max-width:760px;margin:auto}
+.stats{background:white;margin:-2px 22px 22px;border-radius:28px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;box-shadow:0 8px 25px #0000000d}
+.stat{text-align:center;background:#f8fafc;border-radius:22px;padding:20px 8px}
+.stat b{display:block;font-size:30px}.stat span{color:#64748b;font-size:15px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 22px 20px}
+.tab{border:0;border-radius:22px;padding:18px 8px;background:#dfe7f1;color:#111827;font-weight:800;font-size:16px;cursor:pointer}
+.tab.active{background:#111827;color:white}
+main{padding:0 22px 40px}
+.card{background:white;border-radius:28px;padding:24px;margin-bottom:18px;box-shadow:0 6px 22px #00000009}
+h2{font-size:24px;margin:0 0 20px}
+input{width:100%;padding:17px 18px;border:2px solid #e5e7eb;border-radius:18px;outline:none;margin-bottom:12px;font-size:17px}
+input:focus{border-color:#111827}
+.primary,.danger,.secondary{border:0;border-radius:18px;padding:15px 20px;font-weight:800;cursor:pointer}
+.primary{background:#111827;color:white}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#b91c1c}
+.customer{border:2px solid #edf0f4;border-radius:24px;padding:18px;margin-top:14px}
+.customer-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.name{font-size:20px;font-weight:800}.phone{color:#64748b;font-size:14px;margin-top:4px}
+.badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#e5e7eb;font-size:12px;font-weight:800}
+.vip{background:#fef3c7;color:#92400e}
+.progress{height:12px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:14px 0 8px}
+.bar{height:100%;background:#111827;border-radius:99px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1}
+.small{font-size:13px;color:#64748b}
+.reward-box{background:#f8fafc;border-radius:20px;padding:16px;margin-top:12px}
+.reward-title{font-weight:800;font-size:17px}.reward-desc{color:#475569;margin-top:5px}
+.claim{margin-top:12px;width:100%;background:#16a34a;color:white;border:0;border-radius:16px;padding:13px;font-weight:800}
+.claim:disabled{background:#cbd5e1;color:#64748b}
+.customer-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:14px}
+.plus{background:#111827;color:white;border:0;border-radius:16px;padding:14px;font-weight:800}
+.delete{background:#fee2e2;color:#b91c1c;border:0;border-radius:16px;padding:14px;font-weight:800}
+.empty{text-align:center;color:#64748b;padding:28px 10px}
+.hidden{display:none!important}
+.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:18px;padding:14px;font-size:14px;line-height:1.5}
+.data-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.data-btns button{width:100%}
+textarea{width:100%;min-height:130px;margin-top:12px;border:2px solid #e5e7eb;border-radius:16px;padding:12px;display:none}
+.footer{text-align:center;color:#94a3b8;font-size:12px;padding:5px 0 20px}
+@media(max-width:430px){h1{font-size:25px}.stats{margin-left:16px;margin-right:16px}.tabs,main{padding-left:16px;padding-right:16px}.stat b{font-size:26px}}
+</style>
+</head>
+<body>
+<header class="header">
+<div class="wrap">
+  <div class="brand"><div class="logo">👥</div><div><h1>Loyalty Pelanggan</h1><div class="subtitle">Reward bertingkat • VIP permanen</div></div></div>
+</div>
+</header>
+
+<div class="wrap">
+<section class="stats">
+  <div class="stat"><b id="statCustomers">0</b><span>Pelanggan</span></div>
+  <div class="stat"><b id="statVip">0</b><span>VIP</span></div>
+  <div class="stat"><b id="statClaim">0</b><span>Siap klaim</span></div>
+</section>
+
+<nav class="tabs">
+  <button class="tab active" onclick="showTab('customers',this)">👥<br>Pelanggan</button>
+  <button class="tab" onclick="showTab('rewards',this)">🎁<br>Reward</button>
+  <button class="tab" onclick="showTab('data',this)">💾<br>Data</button>
+</nav>
+
+<main>
+<section id="customers">
+  <div class="card">
+    <h2>Tambah pelanggan</h2>
+    <input id="nameInput" placeholder="Nama pelanggan" autocomplete="off">
+    <input id="phoneInput" placeholder="Nomor HP (opsional)" inputmode="tel" autocomplete="off">
+    <button class="primary" onclick="addCustomer()">＋ Tambah</button>
+  </div>
+  <div class="card">
+    <h2>Daftar pelanggan</h2>
+    <input id="searchInput" placeholder="🔎 Cari nama / nomor HP..." oninput="renderCustomers()">
+    <div id="customerList"></div>
+  </div>
+</section>
+
+<section id="rewards" class="hidden">
+  <div class="card">
+    <h2>Reward bertingkat</h2>
+    <div class="notice">Setiap transaksi setiap transaksi dihitung 1x. Setelah reward diklaim, hitungan kembali ke 0 dan lanjut ke target berikutnya. Setelah reward 100x diklaim, pelanggan menjadi <b>VIP permanen</b>.</div>
+    <div id="rewardList"></div>
+  </div>
+</section>
+
+<section id="data" class="hidden">
+  <div class="card">
+    <h2>Data aplikasi</h2>
+    <div class="notice">Data disimpan otomatis di penyimpanan browser (localStorage) setiap kali ada perubahan. <b>Tidak ada kode yang mengosongkan data saat halaman dibuka atau di-refresh.</b></div>
+    <div style="height:14px"></div>
+    <div class="data-btns">
+      <button class="secondary" onclick="exportData()">⬇️ Backup Data</button>
+      <button class="secondary" onclick="document.getElementById('fileInput').click()">⬆️ Pulihkan Data</button>
+    </div>
+    <input id="fileInput" type="file" accept=".json,application/json" class="hidden" onchange="importData(event)">
+    <div style="height:10px"></div>
+    <button class="danger" style="width:100%" onclick="deleteAllData()">🗑️ Hapus Semua Data</button>
+  </div>
+</section>
+
+<div class="footer">Loyalty Pelanggan • Data tersimpan di perangkat ini</div>
+</main>
+</div>
+
+<script>
+/*
+  PENTING:
+  - Jangan pernah mengganti STORAGE_KEY jika ingin data tetap terbaca.
+  - Data disimpan setiap ada perubahan.
+  - Tidak ada reset otomatis saat halaman dibuka.
+*/
+const STORAGE_KEY = "loyalty_pelanggan_transaksi_data_v1";
+
+const REWARDS = [
+  {target:35, reward:"Minyak 1 liter"},
+  {target:55, reward:"Minyak 2 liter"},
+  {target:75, reward:"Cashback Rp50.000"},
+  {target:100, reward:"Beras 5 kg + sembako"}
+];
+
+let customers = loadData();
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return [];
+    const data = JSON.parse(raw);
+    if(!Array.isArray(data)) return [];
+    return data.map(normalizeCustomer);
+  }catch(e){
+    console.error("Gagal membaca data:",e);
+    return [];
+  }
+}
+
+function normalizeCustomer(c){
+  return {
+    id: c.id || (Date.now()+Math.random()),
+    name: String(c.name || "Tanpa Nama"),
+    phone: String(c.phone || ""),
+    progress: Number.isFinite(Number(c.progress)) ? Number(c.progress) : 0,
+    stage: Math.max(0, Math.min(Number(c.stage)||0, REWARDS.length)),
+    vip: Boolean(c.vip),
+    totalTransactions: Number(c.totalTransactions)||0,
+    claims: Array.isArray(c.claims)?c.claims:[],
+    createdAt: c.createdAt || new Date().toISOString()
+  };
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+  renderAll();
+}
+
+function addCustomer(){
+  const name = document.getElementById("nameInput").value.trim();
+  const phone = document.getElementById("phoneInput").value.trim();
+  if(!name){ alert("Nama pelanggan wajib diisi."); return; }
+
+  customers.push({
+    id: Date.now()+Math.random(),
+    name, phone, progress:0, stage:0, vip:false,
+    totalTransactions:0, claims:[], createdAt:new Date().toISOString()
+  });
+  document.getElementById("nameInput").value="";
+  document.getElementById("phoneInput").value="";
+  saveData();
+}
+
+function addTransaction(id){
+  const c = customers.find(x=>x.id===id);
+  if(!c || c.vip) return;
+  c.progress++;
+  c.totalTransactions++;
+  saveData();
+}
+
+function claimReward(id){
+  const c = customers.find(x=>x.id===id);
+  if(!c || c.vip) return;
+  const r = REWARDS[c.stage];
+  if(!r || c.progress < r.target) return;
+
+  c.claims.push({
+    target:r.target,
+    reward:r.reward,
+    date:new Date().toLocaleString("id-ID")
+  });
+  c.progress=0;
+  c.stage++;
+
+  if(c.stage >= REWARDS.length){
+    c.vip=true;
+  }
+  saveData();
+  alert(c.vip ? "Reward 100x berhasil diklaim. Pelanggan sekarang VIP permanen! 👑" : "Reward berhasil diklaim! Target berikutnya sudah dimulai dari 0.");
+}
+
+function deleteCustomer(id){
+  const c = customers.find(x=>x.id===id);
+  if(!c) return;
+  if(confirm("Hapus pelanggan \""+c.name+"\" beserta riwayat reward-nya?")){
+    customers = customers.filter(x=>x.id!==id);
+    saveData();
+  }
+}
+
+function renderCustomers(){
+  const list=document.getElementById("customerList");
+  const q=document.getElementById("searchInput").value.trim().toLowerCase();
+  const filtered=customers.filter(c=>c.name.toLowerCase().includes(q)||c.phone.toLowerCase().includes(q));
+
+  if(!filtered.length){
+    list.innerHTML='<div class="empty">'+(customers.length?'Pelanggan tidak ditemukan.':'Belum ada pelanggan.')+'</div>';
+    return;
+  }
+
+  list.innerHTML=filtered.map(c=>{
+    const reward=REWARDS[c.stage];
+    const target=reward ? reward.target : 100;
+    const pct=c.vip ? 100 : Math.min(100,(c.progress/target)*100);
+    const ready=reward && c.progress>=reward.target;
+    return `
+    <div class="customer">
+      <div class="customer-head">
+        <div><div class="name">${escapeHtml(c.name)}</div><div class="phone">${escapeHtml(c.phone||"Nomor HP tidak diisi")}</div></div>
+        <span class="badge ${c.vip?'vip':''}">${c.vip?'👑 VIP PERMANEN':'Aktif'}</span>
+      </div>
+
+      <div style="margin-top:14px;font-weight:800">
+        ${c.vip ? 'VIP PERMANEN 🎉' : c.progress+' / '+target+' transaksi'}
+      </div>
+      <div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+      <div class="small">
+        ${c.vip ? 'Semua reward selesai.' : 'Reward berikutnya: '+escapeHtml(reward.reward)}
+      </div>
+
+      ${!c.vip ? `<div class="customer-actions">
+        <button class="plus" onclick="addTransaction(${c.id})">＋ 1 Transaksi</button>
+        <button class="delete" onclick="deleteCustomer(${c.id})">🗑️</button>
+      </div>
+      <button class="claim" onclick="claimReward(${c.id})" ${ready?'':'disabled'}>
+        🎁 ${ready?'Klaim '+escapeHtml(reward.reward):'Belum siap klaim'}
+      </button>` :
+      `<div class="customer-actions"><button class="delete" onclick="deleteCustomer(${c.id})">🗑️ Hapus</button></div>`}
+
+      ${c.claims.length ? `<div class="reward-box"><div class="reward-title">Riwayat klaim</div><div class="reward-desc">${c.claims.slice().reverse().map(h=>h.target+'x — '+escapeHtml(h.reward)+' ('+escapeHtml(h.date)+')').join('<br>')}</div></div>`:''}
+    </div>`;
+  }).join("");
+}
+
+function renderRewards(){
+  document.getElementById("rewardList").innerHTML=REWARDS.map((r,i)=>`
+    <div class="reward-box">
+      <div class="reward-title">${r.target}x transaksi</div>
+      <div class="reward-desc">🎁 ${r.reward}${i===REWARDS.length-1?' → setelah klaim menjadi VIP permanen 👑':''}</div>
+    </div>
+  `).join("");
+}
+
+function renderStats(){
+  document.getElementById("statCustomers").textContent=customers.length;
+  document.getElementById("statVip").textContent=customers.filter(c=>c.vip).length;
+  document.getElementById("statClaim").textContent=customers.filter(c=>!c.vip && REWARDS[c.stage] && c.progress>=REWARDS[c.stage].target).length;
+}
+
+function renderAll(){
+  renderStats(); renderCustomers(); renderRewards();
+}
+
+function showTab(tab,btn){
+  ["customers","rewards","data"].forEach(id=>document.getElementById(id).classList.toggle("hidden",id!==tab));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(customers,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="backup-loyalty-pelanggan.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    try{
+      const imported=JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error();
+      if(!confirm("Pulihkan backup ini? Data pelanggan saat ini akan diganti dengan isi backup.")) return;
+      customers=imported.map(normalizeCustomer);
+      saveData();
+      alert("Data berhasil dipulihkan.");
+    }catch(e){ alert("File backup tidak valid."); }
+    event.target.value="";
+  };
+  reader.readAsText(file);
+}
+
+function deleteAllData(){
+  if(confirm("Yakin hapus SEMUA data pelanggan? Tindakan ini tidak bisa dibatalkan.")){
+    localStorage.removeItem(STORAGE_KEY);
+    customers=[];
+    renderAll();
+  }
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+renderAll();
+</script>
+</body>
+</html>
